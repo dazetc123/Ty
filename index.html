@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Làm người yêu tớ nhé?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Dancing+Script:wght@600;700&display=swap&subset=vietnamese" rel="stylesheet">
+<style>
+/* VOICE: ngọt ngào, tinh nghịch, một câu hỏi duy nhất
+   IDEA: tấm ảnh polaroid giữa buổi hoàng hôn hồng, tim bay lững lờ
+   PICTURE: sticker gấu ôm nhau trong khung polaroid, tim + đốm sáng bokeh phía sau
+   COLOUR and TYPE: hồng đào -> hồng hoa hồng -> tím oải hương; đêm là rượu vang; Baloo 2 + Dancing Script
+   LAYOUT: một màn hình, ảnh - câu hỏi - hai nút, căn giữa */
+:root{color-scheme:light dark;
+  --ink:light-dark(#7a1838,#ffe6ee);--soft:light-dark(#a8506d,#f3b6ca);
+  --yes:#e8355a;--no:light-dark(#fff,#4a2032);--noInk:light-dark(#8a3a55,#ffdbe5);
+  --sky:linear-gradient(160deg,#ffe1e8 0%,#ffc2d2 38%,#f9a8c4 68%,#e7b3e6 100%);
+  --glow:light-dark(rgba(255,255,255,.75),rgba(255,120,170,.35));--float:light-dark(rgba(232,53,90,.5),rgba(255,140,180,.55))}
+:root[data-theme=light]{color-scheme:light;--ink:#7a1838;--soft:#a8506d;--no:#fff;--noInk:#8a3a55;--sky:linear-gradient(160deg,#ffe1e8 0%,#ffc2d2 38%,#f9a8c4 68%,#e7b3e6 100%);--glow:rgba(255,255,255,.75);--float:rgba(232,53,90,.5)}
+:root[data-theme=dark]{color-scheme:dark;--ink:#ffe6ee;--soft:#f3b6ca;--no:#4a2032;--noInk:#ffdbe5;--sky:linear-gradient(160deg,#2b0f22 0%,#4a1532 45%,#5e1f45 75%,#3a1a4a 100%);--glow:rgba(255,120,170,.35);--float:rgba(255,140,180,.55)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--sky:linear-gradient(160deg,#2b0f22 0%,#4a1532 45%,#5e1f45 75%,#3a1a4a 100%)}}
+*{box-sizing:border-box;min-width:0}
+html,body{height:100%}
+body{margin:0;color:var(--ink);font:17px/1.5 "Baloo 2",system-ui,sans-serif;overflow:hidden;background:var(--sky);
+  display:grid;place-items:center;-webkit-tap-highlight-color:transparent;user-select:none}
+/* nền: đốm sáng bokeh + tim bay */
+.bg{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.bokeh{position:absolute;border-radius:50%;background:radial-gradient(circle,var(--glow),transparent 70%);filter:blur(2px)}
+.floaty{position:absolute;bottom:-40px;color:var(--float);animation:rise linear infinite}
+@keyframes rise{0%{transform:translate(0,0) rotate(-10deg);opacity:0}10%{opacity:1}50%{transform:translate(var(--dx),-55vh) rotate(10deg)}90%{opacity:.9}100%{transform:translate(0,-115vh) rotate(-8deg);opacity:0}}
+main{position:relative;z-index:1;width:min(560px,100%);padding:20px 18px;text-align:center;display:grid;justify-items:center;gap:4px}
+.polaroid{transform:rotate(-2.5deg);filter:drop-shadow(0 14px 18px rgba(122,24,56,.25));animation:bob 4s ease-in-out infinite}
+.polaroid img{display:block;width:clamp(180px,32vh,260px);aspect-ratio:1/1;height:auto;object-fit:contain;border-radius:2px}
+@keyframes bob{0%,100%{transform:rotate(-2.5deg) translateY(0)}50%{transform:rotate(-1deg) translateY(-6px)}}
+h1{font-size:clamp(32px,7vw,48px);line-height:1.05;margin:18px 0 2px;font-weight:800;text-wrap:balance;text-shadow:0 2px 14px var(--glow)}
+p.sub{margin:0 0 14px;color:var(--soft);font-size:17px;min-height:1.5em}
+.btns{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:center}
+button{font:inherit;font-weight:700;border:0;border-radius:999px;cursor:pointer;min-height:48px;touch-action:manipulation}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+#yes{--s:1;background:linear-gradient(180deg,#ff5a7a,#e8355a);color:#fff;font-size:min(calc(18px * var(--s)),20vw);
+  padding:.45em 1.4em;box-shadow:0 .25em 0 #b81f43,0 .5em 1.4em rgba(232,53,90,.45);
+  transition:font-size .25s cubic-bezier(.3,1.6,.5,1),transform .1s}
+#yes:active{transform:translateY(.12em)}
+#no{background:var(--no);color:var(--noInk);font-size:18px;padding:.45em 1.3em;white-space:nowrap;
+  box-shadow:0 4px 0 rgba(122,24,56,.18),0 6px 14px rgba(122,24,56,.18);z-index:5}
+#no.loose{position:fixed;transition:left .28s cubic-bezier(.3,1.4,.5,1),top .28s cubic-bezier(.3,1.4,.5,1)}
+.done{display:none;justify-items:center;gap:4px}
+body.yay .ask{display:none}body.yay .done{display:grid}
+.again{background:transparent;color:var(--soft);font-size:15px;text-decoration:underline;min-height:44px;padding:0 12px}
+body.yay .polaroid{animation:pop .6s cubic-bezier(.3,1.6,.5,1),bob 4s ease-in-out .6s infinite}
+@keyframes pop{0%{transform:rotate(-2.5deg) scale(.85)}100%{transform:rotate(-2.5deg) scale(1)}}
+.fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:3}
+.fx span{position:absolute;top:-40px;color:#e8355a;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(var(--r))}}
+@media (prefers-reduced-motion:reduce){#yes,#no.loose{transition:none}.polaroid,.floaty{animation:none!important}.floaty,.fx{display:none}}
+</style>
+</head>
+<body>
+<div class="bg" id="bg" aria-hidden="true"></div>
+<main>
+  <figure class="polaroid" style="margin:0">
+    <img id="pic" src="ask.gif" alt="Gấu ôm bó hoa">
+  </figure>
+
+  <section class="ask" aria-live="polite">
+    <h1>Làm người yêu tớ nhé?</h1>
+    <p class="sub" id="sub"></p>
+    <div class="btns">
+      <button id="yes" type="button">Có</button>
+      <button id="no" type="button">Không</button>
+    </div>
+  </section>
+
+  <section class="done" aria-live="polite">
+    <h1>Yeee! Biết ngay mà!</h1>
+    <p class="sub">Từ giờ là người yêu của nhau rồi đó nha. Thương nhiều lắm luôn 💖</p>
+    <button class="again" id="again" type="button">Xem lại từ đầu</button>
+  </section>
+</main>
+<div class="fx" id="fx"></div>
+
+<script>
+{
+const $=s=>document.querySelector(s);
+const yes=$('#yes'),no=$('#no'),pic=$('#pic'),sub=$('#sub'),fx=$('#fx'),btns=$('.btns'),bg=$('#bg');
+/* sticker cho từng giai đoạn — đổi file ở đây khi có thêm sticker */
+const sticker={plead:'ask.gif',sad:'ask.gif',cry:'ask.gif',happy:'yay.gif'};
+const noText=["Không","Chắc chưa đó?","Nghĩ lại đi mà","Thật sự không á?","Đừng mà 🥺","Tớ buồn đó nha","Cho tớ cơ hội đi","Bấm nhầm đúng không?","Nút này hỏng rồi 😤","Năn nỉ đó","Bấm bên kia kìa!","Không bắt được đâu 😝"];
+const subText=["","Ơ kìa, bấm nhầm rồi","Nút “Có” to lắm, dễ bấm hơn nè","Tớ sắp khóc thật đó...","Nút “Không” đã bỏ trốn","Thôi chọn “Có” đi mà"];
+let n=0,last=0;
+
+new Image().src='yay.gif';
+function mood(m){if(!pic.src.endsWith(sticker[m]))pic.src=sticker[m]}
+
+/* nền lãng mạn */
+for(let i=0;i<9;i++){
+  const b=document.createElement('div');b.className='bokeh';
+  const z=60+Math.random()*160;
+  Object.assign(b.style,{width:z+'px',height:z+'px',left:Math.random()*100+'%',top:Math.random()*100+'%',opacity:.35+Math.random()*.5});
+  bg.appendChild(b);
+}
+for(let i=0;i<18;i++){
+  const h=document.createElement('span');h.className='floaty';h.textContent='♥';
+  h.style.left=Math.random()*100+'%';
+  h.style.fontSize=(12+Math.random()*22)+'px';
+  h.style.animationDuration=(9+Math.random()*10)+'s';
+  h.style.animationDelay=(-Math.random()*18)+'s';
+  h.style.setProperty('--dx',(Math.random()*80-40)+'px');
+  bg.appendChild(h);
+}
+
+function place(force){
+  const w=no.offsetWidth,h=no.offsetHeight,vw=innerWidth,vh=innerHeight,pad=12;
+  const y=yes.getBoundingClientRect(),cur=no.getBoundingClientRect();
+  let x,t,ok=false;
+  for(let i=0;i<40&&!ok;i++){
+    x=pad+Math.random()*Math.max(0,vw-w-pad*2);
+    t=pad+Math.random()*Math.max(0,vh-h-pad*2);
+    const hitYes=x<y.right+12&&x+w>y.left-12&&t<y.bottom+12&&t+h>y.top-12;
+    const far=Math.hypot(x-cur.left,t-cur.top)>Math.min(160,vw/3);
+    ok=!hitYes&&(far||force);
+  }
+  no.style.left=x+'px';no.style.top=t+'px';
+}
+
+function flee(e){
+  if(e)e.preventDefault();
+  const now=Date.now();if(now-last<220)return;last=now;
+  n++;
+  no.textContent=n<noText.length?noText[n]:noText[3+Math.floor(Math.random()*(noText.length-3))];
+  sub.textContent=subText[Math.min(Math.floor(n/2),subText.length-1)];
+  yes.style.setProperty('--s',Math.min(1+n*.3,7).toFixed(2));
+  mood(n<3?'plead':n<6?'sad':'cry');
+  if(!no.classList.contains('loose')){
+    const r=no.getBoundingClientRect();
+    no.classList.add('loose');no.style.left=r.left+'px';no.style.top=r.top+'px';
+    document.body.appendChild(no);
+  }
+  requestAnimationFrame(()=>requestAnimationFrame(()=>place(false)));
+}
+
+no.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')flee()});
+no.addEventListener('pointerdown',flee);
+no.addEventListener('click',flee);
+no.addEventListener('touchstart',flee,{passive:false});
+addEventListener('resize',()=>{if(no.classList.contains('loose'))place(true)});
+
+function hearts(){
+  const chars=['♥','♥','♥','❤','💕'];
+  for(let i=0;i<50;i++){
+    const s=document.createElement('span');
+    s.textContent=chars[i%chars.length];
+    s.style.left=Math.random()*100+'vw';
+    s.style.fontSize=(16+Math.random()*26)+'px';
+    s.style.animationDuration=(2.6+Math.random()*2.8)+'s';
+    s.style.animationDelay=(Math.random()*1.6)+'s';
+    s.style.setProperty('--r',(Math.random()*720-360)+'deg');
+    s.style.opacity=.55+Math.random()*.45;
+    fx.appendChild(s);
+  }
+  setTimeout(()=>fx.innerHTML='',7000);
+}
+
+yes.addEventListener('click',()=>{
+  document.body.classList.add('yay');
+  mood('happy');
+  no.style.display='none';
+  hearts();
+});
+
+$('#again').addEventListener('click',()=>{
+  n=0;document.body.classList.remove('yay');
+  mood('plead');
+  yes.style.setProperty('--s',1);
+  no.textContent=noText[0];sub.textContent=subText[0];
+  no.classList.remove('loose');no.style.cssText='';
+  btns.appendChild(no);
+});
+}
+</script>
+</body>
+</html>
